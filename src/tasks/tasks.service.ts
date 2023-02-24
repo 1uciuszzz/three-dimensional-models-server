@@ -5,6 +5,10 @@ import {
   UploadPartCommand,
   CompleteMultipartUploadCommand,
   ListPartsCommand,
+  GetObjectCommand,
+  GetObjectAclCommandOutput,
+  GetObjectCommandOutput,
+  ListObjectsCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PrismaService } from "src/prisma.service";
@@ -24,6 +28,14 @@ export class TasksService {
       forcePathStyle: true,
       region: "ap-east-1",
     });
+  }
+
+  async getObject(key: string) {
+    const objects = await this.s3c.send(
+      new ListObjectsCommand({ Bucket: this.bucket })
+    );
+    const object = objects.Contents.find((item) => item.Key === key);
+    return object;
   }
 
   async createTask(key: string) {

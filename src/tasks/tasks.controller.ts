@@ -6,8 +6,13 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get(":key")
-  createTask(@Param("key") key: string) {
-    return this.tasksService.createTask(key);
+  async createTask(@Param("key") key: string) {
+    const object = await this.tasksService.getObject(key);
+    if (object) {
+      return object;
+    } else {
+      return this.tasksService.createTask(key);
+    }
   }
 
   @Get(":key/:uploadId/part/:partNum")
