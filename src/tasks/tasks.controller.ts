@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from "@nestjs/common";
+import { Reply } from "src/utils/Reply";
 import { TasksService } from "./tasks.service";
 
 @Controller("tasks")
@@ -7,28 +8,50 @@ export class TasksController {
 
   @Get(":key")
   async createTask(@Param("key") key: string) {
-    const object = await this.tasksService.getObject(key);
-    if (object) {
-      return object;
-    } else {
-      return this.tasksService.createTask(key);
+    try {
+      const object = await this.tasksService.getObject(key);
+      if (object) {
+        return Reply.success(undefined, undefined, {
+          existed: true,
+          record: object,
+        });
+      } else {
+        return Reply.success(undefined, undefined, {
+          existed: false,
+          uploadId: await this.tasksService.createTask(key),
+        });
+      }
+    } catch (error) {
+      return Reply.failed();
     }
   }
 
   @Get(":key/:uploadId/part/:partNum")
-  getUploadUrl(
+  async getUploadUrl(
     @Param("key") key: string,
     @Param("uploadId") uploadId: string,
     @Param("partNum") partNum: string
   ) {
-    return this.tasksService.generateUploadUrl(key, uploadId, +partNum);
+    try {
+      return Reply.success(undefined, undefined, {
+        url: await this.tasksService.generateUploadUrl(key, uploadId, +partNum),
+      });
+    } catch (error) {
+      return Reply.failed();
+    }
   }
 
   @Get(":key/:uploadId/merge")
-  mergeMultiPartRequest(
+  async mergeMultiPartRequest(
     @Param("key") key: string,
     @Param("uploadId") uploadId: string
   ) {
-    return this.tasksService.mergeMultiPart(key, uploadId);
+    try {
+      return Reply.success(undefined, undefined, {
+        record: await this.tasksService.mergeMultiPart(key, uploadId),
+      });
+    } catch (error) {
+      return Reply.failed();
+    }
   }
 }

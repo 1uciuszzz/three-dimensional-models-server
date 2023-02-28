@@ -34,6 +34,9 @@ export class TasksService {
     const objects = await this.s3c.send(
       new ListObjectsCommand({ Bucket: this.bucket })
     );
+    if (!objects.Contents) {
+      return undefined;
+    }
     const object = objects.Contents.find((item) => item.Key === key);
     return object;
   }
