@@ -4,7 +4,7 @@ import { PrismaService } from "./prisma.service";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: ["log"] });
 
   const docCfg = new DocumentBuilder()
     .setTitle("Three Dimensional Models Server API Reference")
